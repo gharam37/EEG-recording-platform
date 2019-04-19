@@ -6,6 +6,8 @@ const routes = require('./routes')
 routes.forEach((route, index) => {
  fastify.route(route)
 })
+const cors = require('cors')
+fastify.use(cors())
 // Require external modules
 const mongoose = require('mongoose')
 // Connect to DB
@@ -24,7 +26,7 @@ fastify.register(require('fastify-swagger'), swagger.options)
 // Run the server!
 const start = async () => {
   try {
-    await fastify.listen(3000)
+    await fastify.listen(3030)
     fastify.swagger()
     fastify.log.info(`listening on ${fastify.server.address().port}`)
   } catch (err) {
