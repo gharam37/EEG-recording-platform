@@ -37,6 +37,7 @@ class FormContainer extends Component {
   e.preventDefault();
   let userData = this.state.newUser;
   console.log(userData)
+  var data1=null
   fetch('http://localhost:3030/api/Users',{
       method: "POST",
       body: JSON.stringify(userData),
@@ -46,17 +47,26 @@ class FormContainer extends Component {
       },
     }).then(response => {
       response.json().then(data =>{
-        console.log("Successful" + data);
+
+        data1=data._id
+           console.log("Successful " + data1);
+           this.props.history.push({
+           pathname: '/recording',
+           state: {
+             newUser: {
+               name:this.state.newUser.Name,
+               age:this.state.newUser.age,
+               gender:this.state.newUser.gender,
+               id:data1
+
+             }
+           }
+         })
       })
   })
 
 
-  this.props.history.push({
-  pathname: '/recording',
-  state: {
-    newUser:  this.state.newUser
-  }
-})
+
   }
   handleClearForm() {
     // Logic for resetting the form
@@ -68,6 +78,7 @@ class FormContainer extends Component {
         }
       }))
   }
+
   handleGender(e) {
    let value = e.target.value;
    this.setState( prevState => ({ newUser :

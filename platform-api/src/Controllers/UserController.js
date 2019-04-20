@@ -29,8 +29,10 @@ exports.getSingleUser = async (req, reply) => {
 exports.addUser = async (req, reply) => {
   try {
     const user =new User(req.body)
+    console.log(req.body)
     console.log('Hello'+user)
-    return user.save()
+    user.save()
+    return user;
   } catch (err) {
     throw boom.boomify(err)
   }

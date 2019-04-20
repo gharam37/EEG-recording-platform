@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import video from './vid.mp4'
+import io from 'socket.io-client'
+
 
 /* Import Components */
 
@@ -26,11 +28,16 @@ class FormContainer extends Component {
   handleFormSubmit(e) {
 
   e.preventDefault();
-  let userData = this.state.newUser;
-  console.log(userData)
-  fetch('http://localhost:3030/api/Users',{
+
+  fetch('http://localhost:3030/api/Valences',{
       method: "POST",
-      body: JSON.stringify(userData),
+      body: JSON.stringify({
+        name:'10',
+        userID:'',
+        value:0
+
+
+      }),
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
@@ -43,16 +50,36 @@ class FormContainer extends Component {
   }
 
   playVideo() {
-  // You can use the play method as normal on your video ref
-  //this.refs.el.play();
-   this.video.play()
+    this.video.play()
+
+    fetch('http://localhost:3030/api/Emotions',{
+        method: "POST",
+        body: JSON.stringify({
+          name:'10',
+          userID:'',
+          value:0
+
+
+        }),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+      }).then(response => {
+        response.json().then(data =>{
+          console.log("From video" + data);
+        })
+    })
+
 
 }
 
 componentDidMount() {
+
+
   this.video.addEventListener('ended', (event) => {
     console.log("Done");
-    console.log('Printing status'+this.state.playing)
+    //console.log('Printing status'+this.state.playing)
 
 this.setState(() => ({ playing: true }))});
 }
@@ -63,7 +90,7 @@ componentWillUnmount() {
   });}
   render() {
 
-    //console.log("Just Stuff"+this.props.location.state.newUser.name)
+    //console.log("Just Stuff"+this.props.location.state.newUser.id)
     const ref = (el) => { this.video = el }
 
     return (
