@@ -2,9 +2,7 @@ import React, {Component} from 'react';
 import video from './vid.mp4'
 import happy from './happy.jpg'
 import sad from './sad.jpg'
-
-
-import io from 'socket.io-client'
+import io from 'socket.io-client';
 
 import StarRatingComponent from 'react-star-rating-component';
 
@@ -12,6 +10,8 @@ import StarRatingComponent from 'react-star-rating-component';
 
 
 class FormContainer extends Component {
+
+
   constructor(props) {
     super(props);
 
@@ -19,7 +19,8 @@ class FormContainer extends Component {
       playing:false,
       valence:1,
       arousal:1,
-      emotion:0
+      emotion:0,
+      // socket: io('http://127.0.0.1:5000')
 
 
 
@@ -115,6 +116,17 @@ onSadClick(nextValue, prevValue, name) {
   }
 
   playVideo() {
+
+    fetch('http://localhost:5000/start',{
+        method: "GET",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+      })
+//     this.state.socket.on('Message',function(msg){
+//        console.log(msg);
+// });
     this.video.play()
 
 
@@ -123,8 +135,16 @@ onSadClick(nextValue, prevValue, name) {
 
 componentDidMount() {
 
+  console.log("Just Stuff"+this.props.location.state.newUser.name)
 
   this.video.addEventListener('ended', (event) => {
+    fetch('http://localhost:5000/stop',{
+        method: "GET",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+      })
     console.log("Done");
     //console.log('Printing status'+this.state.playing)
 
@@ -137,7 +157,6 @@ componentWillUnmount() {
   });}
   render() {
 
-    //console.log("Just Stuff"+this.props.location.state.newUser.id)
     const ref = (el) => { this.video = el }
 
     return (

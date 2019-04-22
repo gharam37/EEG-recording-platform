@@ -1,12 +1,20 @@
 
 import socket
 import csv
+import requests
+import socketio
+import time
+
+global StartFlag;
+StartFlag=False;
+global Count;
+Count=0;
 
 def data2dic(data):
     field_list = data.split(b',')
 
     if len(field_list) > 17:
-        print(len(field_list))
+        # print(len(field_list))
         return {field:float(field_list[index]) for field, index in FIELDS.items()}
     else:
 
@@ -24,6 +32,7 @@ def save_csv(data):
 
 TCP_IP = "127.0.0.1"
 TCP_PORT = 54123
+MyServer_PORT = 5000
 
 BUFFER_SIZE =256
 
@@ -34,6 +43,23 @@ FIELDS = {"COUNTER": 0, "DATA-TYPE": 1, "AF3": 4, "F7": 5, "F3": 2, "FC5": 3, "T
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((TCP_IP, TCP_PORT))
 s.send(b"\r\n")
+sio = socketio.Client()
+sio.connect('http://localhost:5000')
+@sio.on('start')
+def on_message(data):
+    global StartFlag;
+    StartFlag=True;
+    global start;
+    start= time.time()
+    print(data)
+# @sio.on('stop')
+# def on_message(data):
+#     global Start;
+#     Start=False;
+#     global Count;
+#     print(Count);
+#     Count=0;
+#     print(data)
 # Local buffer to store parts of the messages
 buffer = b''
 
@@ -44,10 +70,13 @@ with open ('mytest.csv','w',newline='') as f:
 # If when when split by \r, \r was the last character of the message, we know that we have to remove \n from
 # the begining of the next message
 remove_newline = False
+# t_end = time.time() + 10
 
+global FieldArray;
+FieldArray=[];
 while True:
-    # We read a chunk
-    data = s.recv(BUFFER_SIZE, socket.MSG_WAITALL)
+  if StartFlag:
+    data = s.recv(BUFFER_SIZE)
     # If we have to remove \n at the begining
     if remove_newline:
         data = data[1:]
@@ -67,9 +96,30 @@ while True:
 
     # We interprete a whole message (begining from the previous step + the end
     fields = data2dic(buffer + msg_parts[0])
-    save_csv(buffer + msg_parts[0])
+    # Count+=1;
+    FieldArray+=[fields]
+
+    # FieldArray=FieldArray+[fields]
+
+    # save_csv(buffer + msg_parts[0])
     # We setup the buffer for next step
     buffer = n_buffer
+    if (len(FieldArray)==128*12):
+            # print(Count)
+            FieldArray=[]
+            Count=0
+            print(time.time()-start)
+            # start= time.time()
+            StartFlag=False;
+    # data = {"fields":fields}
+    # print(fields)
+
+    # if Count==100:
+    #    Count=0;
+    #    r = requests.post("http://127.0.0.1:5000",params =data)
+    # print(Count)
+
+    # print(r.status_code, r.reason)
 
     # Print all channel
-    print(fields)
+print(len(FieldArray))

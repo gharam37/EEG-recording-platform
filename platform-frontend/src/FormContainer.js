@@ -54,7 +54,7 @@ class FormContainer extends Component {
            pathname: '/recording',
            state: {
              newUser: {
-               name:this.state.newUser.Name,
+               name:this.state.newUser.name,
                age:this.state.newUser.age,
                gender:this.state.newUser.gender,
                id:data1
