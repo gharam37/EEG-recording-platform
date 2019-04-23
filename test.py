@@ -93,7 +93,7 @@ if __name__ == "__main__":
            # print(len(field_list))
            # r = 
            # print(r)
-           FieldsArray+=[field_list[2:15]]
+           FieldsArray+=[field_list[2:16]]
            # print(field_list[2:15])
            # print(len([field_list[2:15]]))
            x+=1
@@ -104,7 +104,7 @@ if __name__ == "__main__":
               x=0
               StartFlag=False;
               for i in range(128*12):
-              	for j in range(13): #Should change to 14
+              	for j in range(14): #Should change to 14
               		# print(j)
               		FieldsArray[i][j]=float(str(FieldsArray[i][j]).replace('b','').replace('\'', ''))
               # print(FieldsArray);

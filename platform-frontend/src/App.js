@@ -8,7 +8,7 @@ import { BrowserRouter, Route , Switch } from 'react-router-dom';
 
 class App extends Component {
   render() {
-    console.log("HI");
+    // console.log("HI");
     return (
       <div className="App">
       <BrowserRouter>

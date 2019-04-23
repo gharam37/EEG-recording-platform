@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
 import video from './vid.mp4'
+import video1 from './vid1.mp4'
 import happy from './happy.jpg'
 import sad from './sad.jpg'
 import io from 'socket.io-client';
+import './Recording.css';
 
 import StarRatingComponent from 'react-star-rating-component';
 
@@ -20,6 +22,8 @@ class FormContainer extends Component {
       valence:1,
       arousal:1,
       emotion:0,
+      videosArray:[video,video1],
+      Trial:0
       // socket: io('http://127.0.0.1:5000')
 
 
@@ -66,7 +70,9 @@ onSadClick(nextValue, prevValue, name) {
       body: JSON.stringify({
         name:this.props.location.state.newUser.name,
         userID:this.props.location.state.newUser.id,
-        value:this.state.valence
+        value:this.state.valence,
+        Trial:this.state.Trial
+
       }),
       headers: {
         'Accept': 'application/json',
@@ -83,7 +89,9 @@ onSadClick(nextValue, prevValue, name) {
       body: JSON.stringify({
         name:this.props.location.state.newUser.name,
         userID:this.props.location.state.newUser.id,
-        value:this.state.arousal
+        value:this.state.arousal,
+        Trial:this.state.Trial
+
       }),
       headers: {
         'Accept': 'application/json',
@@ -101,7 +109,8 @@ onSadClick(nextValue, prevValue, name) {
       body: JSON.stringify({
         name:this.props.location.state.newUser.name,
         userID:this.props.location.state.newUser.id,
-        value:this.state.emotion
+        value:this.state.emotion,
+        Trial:this.state.Trial
       }),
       headers: {
         'Accept': 'application/json',
@@ -112,6 +121,11 @@ onSadClick(nextValue, prevValue, name) {
            console.log("Successful " + data);
       })
   })
+  if(this.state.Trial<11){ //12 Trials
+  this.setState({Trial: this.state.Trial+=1});
+}
+  this.setState({playing: false});
+
 
   }
 
@@ -127,7 +141,9 @@ onSadClick(nextValue, prevValue, name) {
 //     this.state.socket.on('Message',function(msg){
 //        console.log(msg);
 // });
+    console.log(this.video);
     this.video.play()
+    this.setState({playing: true});
 
 
 
@@ -137,7 +153,10 @@ componentDidMount() {
 
   console.log("Just Stuff"+this.props.location.state.newUser.name)
 
+
+
   this.video.addEventListener('ended', (event) => {
+    // this.setState({playing: false});
     fetch('http://localhost:5000/stop',{
         method: "GET",
         headers: {
@@ -148,7 +167,7 @@ componentDidMount() {
     console.log("Done");
     //console.log('Printing status'+this.state.playing)
 
-this.setState(() => ({ playing: true }))});
+});
 }
 componentWillUnmount() {
   this.video.RemoveEventListener('ended', (event) => {
@@ -160,18 +179,21 @@ componentWillUnmount() {
     const ref = (el) => { this.video = el }
 
     return (
-      <div>
+      <div className="Whole">
 
+
+
+      <div className="Wholevid">
       <p>
-        Welcome to the expirement
+        This is your Trial number {this.state.Trial+1}
       </p>
-      <div>
 
-      <video ref={ref}  src={video}  type="video/mp4"></video>
-    <button id='playButton'  onClick={this.playVideo}>Whenever you are ready!</button>
+      <video ref={ref}  width="840" height="580" src={this.state.videosArray[this.state.Trial]}  type="video/mp4"></video>
+    <button id='playButton' className="Ready" disabled={(this.state.playing)} onClick={this.playVideo}>Whenever you are ready!</button>
     </div>
 
 
+<div className="Survery">
     <div>
         <h2>How was your valence: {this.state.valence}</h2>
         <StarRatingComponent
@@ -195,9 +217,11 @@ componentWillUnmount() {
         </div>
 
 
-        <button id='playButton'  onClick={this.handleFormSubmit}>Submit your results!</button>
+        <button id='playButton' disabled={!(this.state.playing)} onClick={this.handleFormSubmit}>Submit your results!</button>
 
       </div>
+      </div>
+
 
       </div>
     );
